@@ -54,6 +54,7 @@ fun FitTrackApp(
 
             ExerciseListScreen(
                 category = category,
+                exercises = ExerciseData.getExercisesByCategory(category),
                 onExerciseClick = { exerciseId ->
                     navController.navigate(
                         "exercise_detail/$exerciseId"
