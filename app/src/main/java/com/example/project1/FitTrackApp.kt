@@ -56,6 +56,8 @@ fun FitTrackApp(
                 category = category,
                 exercises = ExerciseData.getExercisesByCategory(category),
                 onExerciseClick = { exerciseId ->
+                    fitTrackViewModel.resetLogger()
+
                     navController.navigate(
                         "exercise_detail/$exerciseId"
                     )
@@ -85,7 +87,19 @@ fun FitTrackApp(
 
                 ExerciseDetailScreen(
                     exercise = exercise,
+                    durationInput = uiState.durationInput,
+                    showSuccessDialog = uiState.showSuccessDialog,
+                    onDurationChange = { newDuration ->
+                        fitTrackViewModel.onDurationChange(newDuration)
+                    },
+                    onLogWorkout = {
+                        fitTrackViewModel.logWorkout(exercise)
+                    },
+                    onDismissDialog = {
+                        fitTrackViewModel.dismissSuccessDialog()
+                    },
                     onBackClick = {
+                        fitTrackViewModel.resetLogger()
                         navController.popBackStack()
                     }
                 )

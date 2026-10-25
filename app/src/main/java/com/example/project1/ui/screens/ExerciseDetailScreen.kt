@@ -8,20 +8,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.project1.data.Exercise
 
@@ -29,8 +35,32 @@ import com.example.project1.data.Exercise
 @Composable
 fun ExerciseDetailScreen(
     exercise: Exercise,
+    durationInput: String,
+    showSuccessDialog: Boolean,
+    onDurationChange: (String) -> Unit,
+    onLogWorkout: () -> Unit,
+    onDismissDialog: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val durationValue = durationInput.toIntOrNull()
+
+    val isDurationValid =
+        durationValue != null && durationValue > 0
+
+    val errorMessage = when {
+        durationInput.isEmpty() ->
+            "Duration is required."
+
+        durationValue == null ->
+            "Enter a valid number."
+
+        durationValue <= 0 ->
+            "Duration must be greater than 0."
+
+        else ->
+            ""
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -137,7 +167,70 @@ fun ExerciseDetailScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = "Log Your Workout",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = durationInput,
+                onValueChange = onDurationChange,
+                label = {
+                    Text(text = "Duration (Minutes)")
+                },
+                singleLine = true,
+                isError = !isDurationValid,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
+                ),
+                supportingText = {
+                    if (!isDurationValid) {
+                        Text(
+                            text = errorMessage,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = onLogWorkout,
+                enabled = isDurationValid,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Log Completed Workout")
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+
+    if (showSuccessDialog) {
+
+        AlertDialog(
+            onDismissRequest = onDismissDialog,
+            title = {
+                Text(text = "Workout Logged!")
+            },
+            text = {
+                Text(
+                    text = "${exercise.name} was successfully added to your workout history."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onDismissDialog
+                ) {
+                    Text(text = "OK")
+                }
+            }
+        )
     }
 }
