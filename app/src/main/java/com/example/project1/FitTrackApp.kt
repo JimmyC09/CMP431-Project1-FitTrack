@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.project1.data.ExerciseData
 import com.example.project1.ui.FitTrackViewModel
 import com.example.project1.ui.screens.DashboardScreen
 import com.example.project1.ui.screens.ExerciseDetailScreen
@@ -17,6 +18,7 @@ fun FitTrackApp(
     fitTrackViewModel: FitTrackViewModel = viewModel()
 ) {
     val navController = rememberNavController()
+    val uiState = fitTrackViewModel.uiState
 
     NavHost(
         navController = navController,
@@ -24,12 +26,16 @@ fun FitTrackApp(
     ) {
 
         composable(route = "dashboard") {
-
             DashboardScreen(
+                uiState = uiState,
+                categories = ExerciseData.categories,
                 onCategoryClick = { category ->
                     navController.navigate(
                         "exercise_list/$category"
                     )
+                },
+                onClearLogs = {
+                    fitTrackViewModel.clearWorkoutLogs()
                 }
             )
         }
