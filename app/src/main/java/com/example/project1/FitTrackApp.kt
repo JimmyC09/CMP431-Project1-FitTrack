@@ -78,12 +78,18 @@ fun FitTrackApp(
             val exerciseId =
                 backStackEntry.arguments?.getString("exerciseId") ?: ""
 
-            ExerciseDetailScreen(
-                exerciseId = exerciseId,
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
+            val exercise =
+                ExerciseData.getExerciseById(exerciseId)
+
+            if (exercise != null) {
+
+                ExerciseDetailScreen(
+                    exercise = exercise,
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
+            }
         }
     }
 }
